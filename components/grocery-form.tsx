@@ -41,6 +41,7 @@ export function GroceryForm({ onAddItem, isLoading }: GroceryFormProps) {
       store: "",
       price: 0,
     },
+    mode: "onChange", // Validate on change for immediate feedback
   })
 
   const onSubmit = (values: FormValues) => {
@@ -66,37 +67,39 @@ export function GroceryForm({ onAddItem, isLoading }: GroceryFormProps) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight mb-2">Add New Grocery Item</h2>
-        <p className="text-muted-foreground">Track prices for a new grocery item by filling out the form below.</p>
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-2">Add New Grocery Item</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Track prices for a new grocery item by filling out the form below.
+        </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <div className="space-y-4 p-6 rounded-lg bg-muted/50">
-          <h3 className="text-lg font-medium">Why Track Prices?</h3>
+      <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+        <div className="space-y-4 p-4 sm:p-6 rounded-lg bg-muted/50 order-2 md:order-1">
+          <h3 className="text-base sm:text-lg font-medium">Why Track Prices?</h3>
           <ul className="space-y-2">
             <li className="flex items-start gap-2">
               <div className="mt-1 h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center">
                 <span className="text-xs text-primary font-medium">1</span>
               </div>
-              <p className="text-sm">Identify price trends over time to make better purchasing decisions</p>
+              <p className="text-xs sm:text-sm">Identify price trends over time to make better purchasing decisions</p>
             </li>
             <li className="flex items-start gap-2">
               <div className="mt-1 h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center">
                 <span className="text-xs text-primary font-medium">2</span>
               </div>
-              <p className="text-sm">Compare prices across different stores to find the best deals</p>
+              <p className="text-xs sm:text-sm">Compare prices across different stores to find the best deals</p>
             </li>
             <li className="flex items-start gap-2">
               <div className="mt-1 h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center">
                 <span className="text-xs text-primary font-medium">3</span>
               </div>
-              <p className="text-sm">Calculate potential savings and optimize your grocery budget</p>
+              <p className="text-xs sm:text-sm">Calculate potential savings and optimize your grocery budget</p>
             </li>
           </ul>
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 order-1 md:order-2" noValidate>
             <FormField
               control={form.control}
               name="name"
@@ -114,7 +117,7 @@ export function GroceryForm({ onAddItem, isLoading }: GroceryFormProps) {
                       disabled={isLoading}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-destructive text-sm mt-1" />
                 </FormItem>
               )}
             />
@@ -136,7 +139,7 @@ export function GroceryForm({ onAddItem, isLoading }: GroceryFormProps) {
                       disabled={isLoading}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-destructive text-sm mt-1" />
                 </FormItem>
               )}
             />
@@ -153,14 +156,14 @@ export function GroceryForm({ onAddItem, isLoading }: GroceryFormProps) {
                   <FormControl>
                     <Input
                       type="number"
-                      step="0.01"
-                      min="0"
+                      step="any"
+                      // Removed min="0" to prevent browser tooltip
                       {...field}
                       className="transition-all focus-visible:ring-2 focus-visible:ring-primary"
                       disabled={isLoading}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-destructive text-sm mt-1" />
                 </FormItem>
               )}
             />

@@ -83,6 +83,8 @@ export function PriceComparison({ items, isLoading }: PriceComparisonProps) {
         case "all":
         default:
           // Use the earliest date from our data, or default to 1 year ago
+          start = earliestDate
+          // Use the earliest date from our data, or default to 1 year ago
           start = earliestDate < new Date(2022, 0, 1) ? earliestDate : new Date(end)
           start.setFullYear(end.getFullYear() - 1)
           break
@@ -189,8 +191,10 @@ export function PriceComparison({ items, isLoading }: PriceComparisonProps) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight mb-2">Price Comparison</h2>
-        <p className="text-muted-foreground mb-4">Compare prices across different stores to find the best deals.</p>
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-2">Price Comparison</h2>
+        <p className="text-sm sm:text-base text-muted-foreground mb-4">
+          Compare prices across different stores to find the best deals.
+        </p>
       </div>
 
       {error && (
@@ -200,8 +204,8 @@ export function PriceComparison({ items, isLoading }: PriceComparisonProps) {
         </Alert>
       )}
 
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
           <Calendar className="h-4 w-4" />
           <span>{dateRangeText}</span>
         </div>
@@ -213,7 +217,7 @@ export function PriceComparison({ items, isLoading }: PriceComparisonProps) {
           }}
           disabled={isLoading}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Select timeframe" />
           </SelectTrigger>
           <SelectContent>
@@ -243,11 +247,11 @@ export function PriceComparison({ items, isLoading }: PriceComparisonProps) {
           {totalSavings > 0 && (
             <Card className="bg-primary/5 border-primary/20">
               <CardHeader className="pb-2">
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle className="flex items-center justify-between text-base sm:text-lg">
                   <span>Potential Savings</span>
                   <span className="text-primary">${totalSavings.toFixed(2)}</span>
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-xs sm:text-sm">
                   Total amount you could save by purchasing each item at the lowest price
                 </CardDescription>
               </CardHeader>
@@ -256,11 +260,13 @@ export function PriceComparison({ items, isLoading }: PriceComparisonProps) {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle>Price Comparison Table</CardTitle>
-              <CardDescription>Compare prices across different stores to find the best deals</CardDescription>
+              <CardTitle className="text-base sm:text-lg">Price Comparison Table</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
+                Compare prices across different stores to find the best deals
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto hidden sm:block">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/50 hover:bg-muted/50">
@@ -310,13 +316,38 @@ export function PriceComparison({ items, isLoading }: PriceComparisonProps) {
                   </TableBody>
                 </Table>
               </div>
+
+              {/* Mobile view for store prices */}
+              <div className="sm:hidden mt-4 space-y-4">
+                {uniqueItemNames.map((itemName) => (
+                  <div key={`mobile-${itemName}`} className="border rounded-md p-3">
+                    <div className="font-medium mb-2">{itemName}</div>
+                    {uniqueStores.map((store) => {
+                      const price = getLatestPrice(itemName, store)
+                      const bestPrice = getBestPrice(itemName)
+                      const isBestPrice = bestPrice && price === bestPrice.price && store === bestPrice.store
+
+                      return price !== null ? (
+                        <div key={`mobile-${itemName}-${store}`} className="flex justify-between text-sm py-1">
+                          <span>{store}:</span>
+                          <span className={isBestPrice ? "text-primary font-semibold" : ""}>
+                            ${price.toFixed(2)} {isBestPrice && "✓"}
+                          </span>
+                        </div>
+                      ) : null
+                    })}
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle>Savings Summary</CardTitle>
-              <CardDescription>Potential savings for each item when buying at the lowest price</CardDescription>
+              <CardTitle className="text-base sm:text-lg">Savings Summary</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
+                Potential savings for each item when buying at the lowest price
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -333,9 +364,12 @@ export function PriceComparison({ items, isLoading }: PriceComparisonProps) {
                   const savingsPercent = (savings / maxPrice) * 100
 
                   return (
-                    <div key={itemName} className="flex justify-between items-center p-3 rounded-md bg-muted/30">
-                      <span className="font-medium">{itemName}</span>
-                      <span className="text-primary font-semibold flex items-center gap-1">
+                    <div
+                      key={itemName}
+                      className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 rounded-md bg-muted/30"
+                    >
+                      <span className="font-medium text-sm">{itemName}</span>
+                      <span className="text-primary font-semibold text-xs sm:text-sm flex items-center gap-1">
                         <TrendingDown className="h-4 w-4" />
                         Save ${savings.toFixed(2)} ({savingsPercent.toFixed(0)}%)
                       </span>

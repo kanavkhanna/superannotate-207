@@ -60,6 +60,7 @@ export function GroceryList({ items, onSelect, onUpdatePrice, onDelete, isLoadin
     defaultValues: {
       price: 0,
     },
+    mode: "onChange", // Validate on change for immediate feedback
   })
 
   const handleUpdatePrice = (values: PriceFormValues) => {
@@ -153,8 +154,10 @@ export function GroceryList({ items, onSelect, onUpdatePrice, onDelete, isLoadin
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight mb-2">Your Grocery Items</h2>
-        <p className="text-muted-foreground mb-4">Track and manage your grocery items and their prices.</p>
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-2">Your Grocery Items</h2>
+        <p className="text-sm sm:text-base text-muted-foreground mb-4">
+          Track and manage your grocery items and their prices.
+        </p>
       </div>
 
       <div className="relative">
@@ -199,71 +202,133 @@ export function GroceryList({ items, onSelect, onUpdatePrice, onDelete, isLoadin
           </motion.div>
         ) : (
           <div className="border rounded-lg overflow-hidden shadow-sm">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50 hover:bg-muted/50">
-                  <TableHead>Item</TableHead>
-                  <TableHead>Store</TableHead>
-                  <TableHead>Latest Price</TableHead>
-                  <TableHead>Change</TableHead>
-                  <TableHead>Last Updated</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredItems.map((item) => {
-                  const priceChange = getPriceChange(item.prices)
+            <div className="hidden sm:block overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50">
+                    <TableHead>Item</TableHead>
+                    <TableHead>Store</TableHead>
+                    <TableHead>Latest Price</TableHead>
+                    <TableHead className="hidden md:table-cell">Change</TableHead>
+                    <TableHead className="hidden lg:table-cell">Last Updated</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredItems.map((item) => {
+                    const priceChange = getPriceChange(item.prices)
 
-                  return (
-                    <TableRow key={item.id} className="transition-colors">
-                      <TableCell className="font-medium">{item.name}</TableCell>
-                      <TableCell>{item.store}</TableCell>
-                      <TableCell className="font-semibold">{getLatestPrice(item.prices)}</TableCell>
-                      <TableCell>
-                        {priceChange ? (
-                          <Badge variant={priceChange.value < 0 ? "success" : "destructive"} className="font-mono">
-                            {priceChange.value < 0 ? "↓" : "↑"}${Math.abs(priceChange.value).toFixed(2)}(
-                            {Math.abs(priceChange.percent).toFixed(1)}%)
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground text-sm">{getLatestDate(item.prices)}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            disabled={isLoading}
-                            aria-label={`Edit price for ${item.name}`}
-                            onClick={(e) => openEditDialog(item, e)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                            <span className="sr-only">Edit price for {item.name}</span>
-                          </Button>
+                    return (
+                      <TableRow key={item.id} className="transition-colors">
+                        <TableCell className="font-medium">{item.name}</TableCell>
+                        <TableCell>{item.store}</TableCell>
+                        <TableCell className="font-semibold">{getLatestPrice(item.prices)}</TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          {priceChange ? (
+                            <Badge variant={priceChange.value < 0 ? "success" : "destructive"} className="font-mono">
+                              {priceChange.value < 0 ? "↓" : "↑"}${Math.abs(priceChange.value).toFixed(2)}(
+                              {Math.abs(priceChange.percent).toFixed(1)}%)
+                            </Badge>
+                          ) : (
+                            <span className="text-muted-foreground text-sm">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell text-muted-foreground text-sm">
+                          {getLatestDate(item.prices)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              disabled={isLoading}
+                              aria-label={`Edit price for ${item.name}`}
+                              onClick={(e) => openEditDialog(item, e)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                              <span className="sr-only">Edit price for {item.name}</span>
+                            </Button>
 
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            disabled={isLoading}
-                            aria-label={`Delete ${item.name}`}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setDeleteConfirmId(item.id)
-                              setIsDeleteDialogOpen(true)
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Delete {item.name}</span>
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              disabled={isLoading}
+                              aria-label={`Delete ${item.name}`}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setDeleteConfirmId(item.id)
+                                setIsDeleteDialogOpen(true)
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              <span className="sr-only">Delete {item.name}</span>
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Mobile card view for small screens */}
+            <div className="sm:hidden">
+              {filteredItems.map((item) => {
+                const latestPrice = getLatestPrice(item.prices)
+                const priceChange = getPriceChange(item.prices)
+
+                return (
+                  <div key={`mobile-${item.id}`} className="p-4 border-b last:border-b-0">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-medium">{item.name}</span>
+                      <span className="font-semibold">{latestPrice}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm text-muted-foreground mb-3">
+                      <span>{item.store}</span>
+                      <span>Updated: {getLatestDate(item.prices)}</span>
+                    </div>
+                    {priceChange && (
+                      <div className="mb-3">
+                        <Badge
+                          variant={priceChange.value < 0 ? "success" : "destructive"}
+                          className="font-mono text-xs"
+                        >
+                          {priceChange.value < 0 ? "↓" : "↑"}${Math.abs(priceChange.value).toFixed(2)} (
+                          {Math.abs(priceChange.percent).toFixed(1)}%)
+                        </Badge>
+                      </div>
+                    )}
+                    <div className="flex justify-end gap-2 mt-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={isLoading}
+                        onClick={(e) => openEditDialog(item, e)}
+                        className="h-8"
+                      >
+                        <Pencil className="h-3 w-3 mr-1" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={isLoading}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setDeleteConfirmId(item.id)
+                          setIsDeleteDialogOpen(true)
+                        }}
+                        className="h-8"
+                      >
+                        <Trash2 className="h-3 w-3 mr-1" />
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         )}
       </AnimatePresence>
@@ -280,13 +345,13 @@ export function GroceryList({ items, onSelect, onUpdatePrice, onDelete, isLoadin
           }
         }}
       >
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-w-[95vw] rounded-lg">
           <DialogHeader>
             <DialogTitle>Update Price for {editingItem?.name}</DialogTitle>
             <DialogDescription>Enter the current price you've seen at {editingItem?.store}.</DialogDescription>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleUpdatePrice)} className="space-y-4 py-4">
+            <form onSubmit={form.handleSubmit(handleUpdatePrice)} className="space-y-4 py-4" noValidate>
               <FormField
                 control={form.control}
                 name="price"
@@ -298,8 +363,8 @@ export function GroceryList({ items, onSelect, onUpdatePrice, onDelete, isLoadin
                       <FormControl>
                         <Input
                           type="number"
-                          step="0.01"
-                          min="0"
+                          step="any"
+                          // Removed min="0" to prevent browser tooltip
                           className="pl-8"
                           placeholder="0.00"
                           {...field}
@@ -307,15 +372,20 @@ export function GroceryList({ items, onSelect, onUpdatePrice, onDelete, isLoadin
                         />
                       </FormControl>
                     </div>
-                    <FormMessage />
+                    <FormMessage className="text-destructive text-sm mt-1" />
                   </FormItem>
                 )}
               />
-              <DialogFooter className="pt-4">
-                <Button variant="outline" type="button" onClick={() => setIsEditDialogOpen(false)}>
+              <DialogFooter className="pt-4 flex-col sm:flex-row gap-2">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => setIsEditDialogOpen(false)}
+                  className="sm:w-auto w-full"
+                >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isLoading}>
+                <Button type="submit" disabled={isLoading} className="sm:w-auto w-full">
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -339,7 +409,7 @@ export function GroceryList({ items, onSelect, onUpdatePrice, onDelete, isLoadin
           if (!open) setDeleteConfirmId(null)
         }}
       >
-        <DialogContent>
+        <DialogContent className="max-w-[95vw] sm:max-w-md rounded-lg">
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>Are you sure you want to delete this item? This action can be undone.</DialogDescription>
@@ -351,11 +421,16 @@ export function GroceryList({ items, onSelect, onUpdatePrice, onDelete, isLoadin
               <AlertDescription>This will remove this item and all its price history from your list.</AlertDescription>
             </Alert>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)} className="sm:w-auto w-full">
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDeleteConfirm} disabled={isLoading}>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              disabled={isLoading}
+              className="sm:w-auto w-full"
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

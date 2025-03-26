@@ -435,29 +435,29 @@ export function GroceryTracker() {
       <Card className="overflow-hidden border-none shadow-lg">
         <CardContent className="p-0">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <div className="border-b bg-muted/50">
+            <div className="border-b bg-muted/50 overflow-x-auto">
               <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
                 <TabsTrigger
                   value="list"
-                  className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"
+                  className="rounded-none border-b-2 border-transparent px-4 sm:px-6 py-3 text-sm whitespace-nowrap data-[state=active]:border-primary data-[state=active]:bg-transparent"
                 >
                   Grocery List
                 </TabsTrigger>
                 <TabsTrigger
                   value="add"
-                  className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"
+                  className="rounded-none border-b-2 border-transparent px-4 sm:px-6 py-3 text-sm whitespace-nowrap data-[state=active]:border-primary data-[state=active]:bg-transparent"
                 >
                   Add Item
                 </TabsTrigger>
                 <TabsTrigger
                   value="compare"
-                  className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"
+                  className="rounded-none border-b-2 border-transparent px-4 sm:px-6 py-3 text-sm whitespace-nowrap data-[state=active]:border-primary data-[state=active]:bg-transparent"
                 >
                   Compare Prices
                 </TabsTrigger>
               </TabsList>
             </div>
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <TabsContent value="list" className="mt-0">
                 <GroceryList
                   items={groceryItems}
